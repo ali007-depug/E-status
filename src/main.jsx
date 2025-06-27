@@ -6,9 +6,9 @@ import App from "./App.jsx";
 import "./firebase.js"
 
 createRoot(document.getElementById("root")).render(
-  <BrowserRouter basename="/E-status">
-    <StrictMode>
+  <StrictMode>
+      <BrowserRouter basename="/E-status">
       <App />
-    </StrictMode>
   </BrowserRouter>
+    </StrictMode>
 );
