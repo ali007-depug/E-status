@@ -56,16 +56,18 @@ export default function Info() {
         <div className="Links flex gap-4 justify-center ">{icons}</div>
 
           {/* with */}
-        <div className="flex gap-2 items-center">
+        {/* <div className="flex gap-2 items-center">
           <p> | وبالتعاون مع</p>
           <a href="https://facebook.com/profile.php?id=100093706992814" target="_blank" title="مصدر كهربائي" className="hover:animate-bounce">
         <img src="logo.webp" alt="logo" width={30} className="size-7 md:size-8 rounded-full" />
-        </a>
+        </a> */}
 
-        </div>
-      </div>
-      {/* copy wright */}
+        {/* </div> */}
+
+              {/* copy wright */}
       {/* <p><BiCopyright/> 2025</p> */}
+
+      </div>
     </div>
   );
 }
