@@ -33,12 +33,7 @@ export default function Info() {
   const icons = socialLinks.map((social, index) => {
     return (
       <Fragment key={index}>
-        <a
-          href={social.link}
-          title={social.name}
-          target="_blank"
-          className=""
-        >
+        <a href={social.link} title={social.name} target="_blank" className="">
           <img
             src={social.src}
             alt={social.name}
@@ -53,13 +48,21 @@ export default function Info() {
   return (
     <div className="w-fit my- relative left-[-50%] translate-x-[50%] bottom-[-30px] bg-white rounded px-5 py-2 min-w-80">
       {/* developer Info */}
-      <div className="text-xs md:text-base w-full bg-white  flex items-center flex-wrap gap-2">
+      <div className="text-xs md:text-base w-full bg-white  flex max-sm:justify-center items-center flex-wrap gap-2">
         <p className="text-center">
           تم تطوير الموقع بواسطة{" "}
           <span className="font-bold text-sm md:text-lg">Ali AbdElbagi</span>
         </p>
-        <p className="text-center font-bold"><BiArrowToLeft/></p>
         <div className="Links flex gap-4 justify-center ">{icons}</div>
+
+          {/* with */}
+        <div className="flex gap-2 items-center">
+          <p> | وبالتعاون مع</p>
+          <a href="https://facebook.com/profile.php?id=100093706992814" target="_blank" title="مصدر كهربائي" className="hover:animate-bounce">
+        <img src="logo.webp" alt="logo" width={30} className="size-7 md:size-8 rounded-full" />
+        </a>
+
+        </div>
       </div>
       {/* copy wright */}
       {/* <p><BiCopyright/> 2025</p> */}
