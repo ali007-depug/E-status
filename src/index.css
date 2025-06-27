@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+@theme {
+  --breakpoint-xs: 30rem;
+  --color-p : #7B4019;
+  --color-sec : #FF7D29;
+  --color-accent : #FFBF78;
+  --color-bg : #FFEEA9;
+  --text-fluid :  clamp(1.875rem, 1.878vw + 1.435rem, 3.125rem);
+  --spacing-dyp : clamp(0.813rem, -0.491rem + 5.561vi, 4.375rem);
+
+
+  
+}
+
+
