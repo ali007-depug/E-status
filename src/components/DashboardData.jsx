@@ -17,6 +17,7 @@ export default function Edata() {
     UmRawaba: false,
     ElRahad: false,
     Elobied: false,
+    EditTime:0
   });
 
   useEffect(() => {
@@ -49,11 +50,13 @@ export default function Edata() {
             UmRawaba: false,
             ElRahad: false,
             Elobied: false,
+            EditTime: Date.now();
           });
           console.log("dood");
         }else{
         await updateDoc(statusRef, {
           [name]: newValue,
+          EditTime:Date.now()
         });
       }
       } catch (error) {
