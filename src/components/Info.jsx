@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import { BiArrowFromLeft, BiArrowToLeft, BiCopyright } from "react-icons/bi";
+// import { BiArrowFromLeft, BiArrowToLeft, BiCopyright } from "react-icons/bi";
 
 export default function Info() {
   const socialLinks = [
