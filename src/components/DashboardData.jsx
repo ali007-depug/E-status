@@ -50,13 +50,13 @@ export default function Edata() {
             UmRawaba: false,
             ElRahad: false,
             Elobied: false,
-            EditTime: Date.now()
+            // EditTime: Date.now()
           });
           console.log("dood");
         }else{
         await updateDoc(statusRef, {
           [name]: newValue,
-          EditTime:Date.now()
+          // EditTime:Date.now()
         });
       }
       } catch (error) {

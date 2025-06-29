@@ -42,7 +42,7 @@ export default function Edata() {
             alt="lamp on & off"
             className="size-10"
           />
-          <p>Edited At : {status?.EditTime}</p>
+          {/* <p>Edited At : {status?.EditTime}</p> */}
         </div>
         {/* cites */}
         <div className="bg-sky-100 flex max-lg:col-start-2 lg:row-start-2 flex-col lg:flex-row lg:justify-center items-center lg:grid lg:grid-cols-subgrid lg:col-span-6 lg:border-b-2 max-lg:border-r-2 max-lg:[&_div]:border-b-2  [&_div]:p-4 [&_div]:w-full [&_div]:items-center [&_div]:min-w-[80px] [&_div]:min-h-[80px] [&_div]:flex [&_div]:justify-center ">
