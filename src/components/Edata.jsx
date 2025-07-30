@@ -2,17 +2,21 @@ import { useEffect, useState } from "react";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
 import AnimatedSpin from "./AnimatedSpin";
+import { BiX } from "react-icons/bi";
+
 export default function Edata() {
   const [status, setStatus] = useState({
-    mainStation: false,
+    mainStation: null,
     Rabak: null,
     Kosti: null,
     Tandalti: null,
     UmRawaba: null,
     ElRahad: null,
     Elobied: null,
+    notfiication: "",
   });
   const [isDataLoading, setIsDataLoading] = useState(true);
+  const [showNotify,setShowNotfiy] = useState(false);
 
   useEffect(() => {
     const statusRef = doc(db, "cityStatus", "status");
@@ -20,6 +24,7 @@ export default function Edata() {
       if (docSnap.exists()) {
         setStatus(docSnap.data());
         setIsDataLoading(false);
+        setShowNotfiy(true)
       }
     });
     // clean up
@@ -44,14 +49,14 @@ export default function Edata() {
           <p>أم دباكر</p>
 
           {isDataLoading ? (
-              <AnimatedSpin />
-            ) : (
-              <img
-                src={status.mainStation ? "lighton.webp" : "lightoff.webp"}
-                alt="lamp on & off"
-                className={`size-10`}
-              />
-            )}
+            <AnimatedSpin />
+          ) : (
+            <img
+              src={status.mainStation ? "lighton.webp" : "lightoff.webp"}
+              alt="lamp on & off"
+              className={`size-10`}
+            />
+          )}
           {/* <p>Edited At : {status?.EditTime}</p> */}
         </div>
         {/* cites */}
@@ -69,8 +74,12 @@ export default function Edata() {
 
           <div
             className={`lg:col-start-1 ${
-              status.Rabak !== null ? status.Rabak ? "bg-green-300" : "bg-red-300"
-   : "bg-sky-200"         }`}
+              status.Rabak !== null
+                ? status.Rabak
+                  ? "bg-green-300"
+                  : "bg-red-300"
+                : "bg-sky-200"
+            }`}
           >
             {isDataLoading ? (
               <AnimatedSpin />
@@ -84,8 +93,12 @@ export default function Edata() {
           </div>
           <div
             className={`lg:col-start-2 ${
-              status.Kosti !== null ? status.Kosti ? "bg-green-300" : "bg-red-300"
-   : "bg-sky-200"         }`}
+              status.Kosti !== null
+                ? status.Kosti
+                  ? "bg-green-300"
+                  : "bg-red-300"
+                : "bg-sky-200"
+            }`}
           >
             {isDataLoading ? (
               <AnimatedSpin />
@@ -99,8 +112,12 @@ export default function Edata() {
           </div>
           <div
             className={`lg:col-start-3 ${
-              status.Tandalti !== null ? status.Tandalti ? "bg-green-300" : "bg-red-300"
-   : "bg-sky-200"         }`}
+              status.Tandalti !== null
+                ? status.Tandalti
+                  ? "bg-green-300"
+                  : "bg-red-300"
+                : "bg-sky-200"
+            }`}
           >
             {isDataLoading ? (
               <AnimatedSpin />
@@ -114,8 +131,12 @@ export default function Edata() {
           </div>
           <div
             className={`lg:col-start-4 ${
-              status.UmRawaba !== null ? status.UmRawaba ? "bg-green-300" : "bg-red-300"
-   : "bg-sky-200"         }`}
+              status.UmRawaba !== null
+                ? status.UmRawaba
+                  ? "bg-green-300"
+                  : "bg-red-300"
+                : "bg-sky-200"
+            }`}
           >
             {isDataLoading ? (
               <AnimatedSpin />
@@ -129,8 +150,12 @@ export default function Edata() {
           </div>
           <div
             className={`lg:col-start-5 ${
-              status.ElRahad !== null ? status.ElRahad ? "bg-green-300" : "bg-red-300"
-   : "bg-sky-200"         }`}
+              status.ElRahad !== null
+                ? status.ElRahad
+                  ? "bg-green-300"
+                  : "bg-red-300"
+                : "bg-sky-200"
+            }`}
           >
             {isDataLoading ? (
               <AnimatedSpin />
@@ -144,10 +169,14 @@ export default function Edata() {
           </div>
           <div
             className={`lg:col-start-6 ${
-              status.Elobied !== null ? status.Elobied ? "bg-green-300" : "bg-red-300"
-   : "bg-sky-200"         }`}
+              status.Elobied !== null
+                ? status.Elobied
+                  ? "bg-green-300"
+                  : "bg-red-300"
+                : "bg-sky-200"
+            }`}
           >
-   {isDataLoading ? (
+            {isDataLoading ? (
               <AnimatedSpin />
             ) : (
               <img
@@ -155,9 +184,24 @@ export default function Edata() {
                 alt="lamp on & off"
                 className={`size-10`}
               />
-            )}          </div>
+            )}{" "}
+          </div>
         </div>
       </div>
+
+      {/* notifcation */}
+      {showNotify && (
+        <div className="bg-sky-100 rounded flex items-center justify-center gap-3 absolute top-0 left-1/2 w-fit -translate-x-1/2 animate-move py-8 px-4 text-lg min-w-80 font-semibold shadow shadow-violet-900">
+          <button
+            className="cursor-pointer bg-red-200 rounded hover:bg-red-300 absolute top-0 right-0"
+            onClick={()=> setShowNotfiy(false)}
+          >
+            <BiX size={30} color="red" />
+          </button>
+
+          <p className="text-center">{status.notfiication}</p>
+        </div>
+      )}
     </div>
   );
 }

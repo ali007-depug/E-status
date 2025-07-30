@@ -1,6 +1,6 @@
 import DashboardData from "../components/DashboardData";
 import { useCallback } from "react";
-import { BiHome, BiLogOut } from "react-icons/bi";
+import { BiHome, BiLogOut, BiMessage } from "react-icons/bi";
 import { RxAvatar } from "react-icons/rx";
 
 // react router
@@ -16,27 +16,35 @@ import {
   getDoc,
   getDocs,
   setDoc,
+  updateDoc,
 } from "firebase/firestore";
-
 
 import { useEffect, useState } from "react";
 import { FaUserSecret } from "react-icons/fa";
 
-
 import PendingUsers from "../components/PendingUsers";
+import Notfiy from "../components/Notfiy";
+import Toast from "../components/Toast";
+import { TbWriting } from "react-icons/tb";
 
 export default function Dashboard() {
   const [showPendingUsers, setShowPendingUsers] = useState(false);
-  const [currentUser,setCurrentUser] = useState("");
-  const [allUsers,setAllUsers] = useState([])
-  const [pendingUsers,setPenidngUsers] = useState([])
+  const [currentUser, setCurrentUser] = useState("");
+  const [allUsers, setAllUsers] = useState([]);
+  const [pendingUsers, setPenidngUsers] = useState([]);
+  const [showTextArea, setShowTextarea] = useState(false);
+  const [textVal, setTextVal] = useState("");
+  const [loading,setLoading]= useState(false);
+  const [toast,setToast] = useState({showToast:false,ToastMsg:""});
+
+
   const navigate = useNavigate();
 
+  useEffect(() => {
+    fetchUsers();
+    getPendingUsers();
+  }, []);
 
-  useEffect(()=>{
-    fetchUsers()
-    getPendingUsers()
-  },[])
   // logout func
   const handleLogout = async () => {
     const auth = getAuth();
@@ -53,36 +61,36 @@ export default function Dashboard() {
     navigate("/");
   };
 
-    // function to fetch users and show it in dashboard
-    const fetchUsers = useCallback(async () => {
-      const auth = getAuth();
-      const currentUser = auth.currentUser;
-      // get current user and relfect his name in UI
-      if (currentUser) {
-        const docRef = doc(db, "users", currentUser.uid);
-        const docSanp = await getDoc(docRef);
-        if (docSanp.exists()) {
-          const userData = docSanp.data();
-          setCurrentUser(userData.name);
-        } else {
-          console.log("no teacher");
-        }
+  // function to fetch users and show it in dashboard
+  const fetchUsers = useCallback(async () => {
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+    // get current user and relfect his name in UI
+    if (currentUser) {
+      const docRef = doc(db, "users", currentUser.uid);
+      const docSanp = await getDoc(docRef);
+      if (docSanp.exists()) {
+        const userData = docSanp.data();
+        setCurrentUser(userData.name);
+      } else {
+        console.log("no teacher");
       }
-  
-      try {
-        // get all users and reflect them in accounts popup
-        const usersCollection = collection(db, "users");
-        const querySnapshot = await getDocs(usersCollection);
-        const usersInfo = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setAllUsers(usersInfo);
-      } catch (error) {
-        console.log(`all users error is : ${error}`);
-      }
-    }, []);
-  
+    }
+
+    try {
+      // get all users and reflect them in accounts popup
+      const usersCollection = collection(db, "users");
+      const querySnapshot = await getDocs(usersCollection);
+      const usersInfo = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setAllUsers(usersInfo);
+    } catch (error) {
+      console.log(`all users error is : ${error}`);
+    }
+  }, []);
+
   // get pending users
   const getPendingUsers = useCallback(async () => {
     try {
@@ -98,38 +106,69 @@ export default function Dashboard() {
     }
   }, []);
 
-    // when user click on ✅
-    const handelApproveUser = useCallback(async (user) => {
-      try {
-        await setDoc(doc(db, "users", user.id), {
-          name: user.name,
-          email: user.email,
-          approveAt: new Date(),
-        });
-        // remove from pending users
-        await deleteDoc(doc(db, "pending-users", user.id));
-  
-        // update Pending users
-        setPenidngUsers((prev) => prev.filter((u) => u.id !== user.id));
-      } catch (error) {
-        console.log(`approve pending error is : ${error}`);
-      }
-    }, []);
-    // when user click on ✖️
-    const handelRejectUser = useCallback(async (id) => {
-      try {
-        await deleteDoc(doc(db, "pending-users", id));
-        setPenidngUsers((prev) => prev.filter((u) => u.id !== id));
-      } catch (error) {
-        console.log(`reject user Error is : ${error}`);
-      }
-    }, []);
-  
+  // when user click on ✅
+  const handelApproveUser = useCallback(async (user) => {
+    try {
+      await setDoc(doc(db, "users", user.id), {
+        name: user.name,
+        email: user.email,
+        approveAt: new Date(),
+      });
+      // remove from pending users
+      await deleteDoc(doc(db, "pending-users", user.id));
+
+      // update Pending users
+      setPenidngUsers((prev) => prev.filter((u) => u.id !== user.id));
+    } catch (error) {
+      console.log(`approve pending error is : ${error}`);
+    }
+  }, []);
+  // when user click on ✖️
+  const handelRejectUser = useCallback(async (id) => {
+    try {
+      await deleteDoc(doc(db, "pending-users", id));
+      setPenidngUsers((prev) => prev.filter((u) => u.id !== id));
+    } catch (error) {
+      console.log(`reject user Error is : ${error}`);
+    }
+  }, []);
 
   // show pending users
   const handlePendingUsers = () => {
     setShowPendingUsers(!showPendingUsers);
   };
+
+  const showNotifyUI = () => {
+    // show textarea
+    setShowTextarea((prev) => !prev);
+  };
+
+  const handleCloseNotfiy = ()=>{
+    setShowTextarea(false);
+
+  }
+
+  const addNotToFireStore = async()=>{
+    console.log("store notificaton to fire store...")
+    setLoading(true)
+    try{
+      const statusRef = doc(db, "cityStatus", "status");
+      await updateDoc(statusRef,{
+        notfiication : textVal
+      });
+      console.log('notfiication added successfuly');
+    }catch(error){
+      console.log(error)
+    }finally{
+      setLoading(false);
+      setToast(()=>({showToast:true,ToastMsg:"تم إرسال الإشعار بنجاح"}));
+      setTimeout(()=>{
+      setToast(()=>({showToast:false,ToastMsg:""}));
+      setTextVal("");
+      },3000)
+    }
+
+  }
   return (
     <div className="overflow-hidden bg-bg-color min-h-[100dvh] [direction:ltr]">
       <p className="sr-only">Dashboard</p>
@@ -138,7 +177,9 @@ export default function Dashboard() {
         {/* user Info */}
         <div className="flex flex-col items-center">
           <RxAvatar size={40} color="beige" className="hidden md:block" />
-          <p className="text-white font-bold self-center flex-wrap">{currentUser}</p>
+          <p className="text-white font-bold self-center flex-wrap">
+            {currentUser}
+          </p>
         </div>
         {/* ====== END user Info ======= */}
 
@@ -176,25 +217,46 @@ export default function Dashboard() {
       {/* End header */}
 
       {/* main */}
-      <main className="min-h-[100dvh] px-dyp py-10 [direction:rtl] bg-sky-950">
+      <main className="min-h-[100dvh] px-dyp py-10 [direction:rtl] bg-sky-950 relative">
         <DashboardData />
 
+        <div className="flex gap-2 flex-wrap">
+          {/* pending user btn */}
+          <button
+            className="flex items-center gap-2 bg-white text-sky-900 hover:text-white hover:bg-gray-950 transition-all duration-300 ease-out px-2 py-1 md:px-3 md:py-2 rounded cursor-pointer font-bold"
+            onClick={handlePendingUsers}
+          >
+            <span>حسابات الأدمن</span>
+            <FaUserSecret size={30} />
+          </button>
+          {/* popup notificaton Btn */}
+          <button
+            className="flex items-center gap-2 bg-white text-sky-900 hover:text-white hover:bg-gray-950 transition-all duration-300 ease-out px-2 py-1 md:px-3 md:py-2 rounded cursor-pointer font-bold"
+            onClick={showNotifyUI}
+          >
+            <span>كتابة إشعار</span>
+            <TbWriting size={30} />
+          </button>
+        </div>
+
         {/* show pending users */}
-        {showPendingUsers &&             <PendingUsers
-              pendingUsers={pendingUsers}
-              allUsers={allUsers}
-              handelApproveUser={handelApproveUser}
-              handelRejectUser={handelRejectUser}
-              closePendingUsers={handlePendingUsers}
-            />
-}
-        <button
-          className="flex items-center gap-2 bg-white text-sky-900 hover:text-white hover:bg-gray-950 transition-all duration-300 ease-out px-2 py-1 md:px-3 md:py-2 rounded cursor-pointer font-bold"
-          onClick={handlePendingUsers}
-        >
-          <span className="hidden md:block">حسابات الأدمن</span>
-          <FaUserSecret size={30} />
-        </button>
+        {showPendingUsers && (
+          <PendingUsers
+            pendingUsers={pendingUsers}
+            allUsers={allUsers}
+            handelApproveUser={handelApproveUser}
+            handelRejectUser={handelRejectUser}
+            closePendingUsers={handlePendingUsers}
+          />
+        )}
+
+        {/* textare */}
+        {showTextArea && <Notfiy textVal={textVal} setTextVal={setTextVal} addNotToFireStore={addNotToFireStore} loading={loading} handleCloseNotfiy={handleCloseNotfiy}/>}
+
+        {/* Toast */}
+        {toast.showToast && (
+          <Toast toastMsg={toast.ToastMsg}/>
+        )}
       </main>
       {/* End main */}
     </div>
